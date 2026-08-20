@@ -24,10 +24,11 @@ Item {
     .replace(/^file:\/\//, "")
     .replace(/\/$/, "")
 
+  // Empty means "every calendar gcalcli knows about" — the helper omits the
+  // --calendar flags entirely rather than substituting a name of its own.
   readonly property var calendars: {
     var configured = setting("calendars", null)
-    if (configured && configured.length > 0) return configured
-    return ["Merged Calendars", "censey@gmail.com"]
+    return configured && configured.length > 0 ? configured : []
   }
   readonly property int intervalSec: intSetting("interval", 60, 15, 3600)
   readonly property int limit: intSetting("limit", 10, 1, 50)

@@ -157,6 +157,30 @@ class FindGcalcliTest(unittest.TestCase):
         self.assertEqual(agenda.find_gcalcli(), str(self.other / "gcalcli"))
 
 
+class BuildCommandTest(unittest.TestCase):
+    """Which calendars get queried. Unset must mean "whatever gcalcli is
+    configured with", not a name baked into the source."""
+
+    def test_passes_each_configured_calendar(self):
+        command = agenda.build_command("/bin/gcalcli", ["Work", "Personal"])
+        self.assertEqual([command[i + 1] for i, a in enumerate(command) if a == "--calendar"],
+                         ["Work", "Personal"])
+
+    def test_queries_every_calendar_when_none_are_configured(self):
+        self.assertNotIn("--calendar", agenda.build_command("/bin/gcalcli", []))
+
+    def test_treats_a_missing_calendar_list_as_every_calendar(self):
+        self.assertNotIn("--calendar", agenda.build_command("/bin/gcalcli", None))
+
+    def test_asks_gcalcli_for_the_details_the_widget_renders(self):
+        command = agenda.build_command("/bin/gcalcli", [])
+        for flag in ("--details=end", "--details=url", "--details=conference", "--tsv", "--nodeclined"):
+            self.assertIn(flag, command)
+
+    def test_runs_the_binary_it_was_given(self):
+        self.assertEqual(agenda.build_command("/opt/gcalcli", [])[0], "/opt/gcalcli")
+
+
 class BuildPayloadTest(unittest.TestCase):
     def test_reports_an_empty_agenda_without_failing(self):
         payload = agenda.build_payload("", now=NOW)

@@ -5,6 +5,7 @@
   "version": "1.0.0",
   "author": "Chris Ensey",
   "license": "MIT",
+  "homepage": "https://github.com/censey/omarchy-agenda",
   "description": "Next meeting countdown in the bar, with a keyboard-navigable agenda popup, backed by gcalcli",
   "kinds": [
     "bar-widget"
@@ -14,7 +15,7 @@
   },
   "barWidget": {
     "displayName": "Agenda",
-    "description": "Countdown to your next meeting. Left = agenda popup · right = refresh · middle = join next meeting.",
+    "description": "Countdown to your next meeting. Left = agenda popup \u00b7 right = refresh \u00b7 middle = join next meeting.",
     "category": "Time",
     "defaultSection": "right",
     "allowMultiple": false

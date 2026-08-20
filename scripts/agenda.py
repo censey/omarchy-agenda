@@ -15,7 +15,6 @@ import subprocess
 import sys
 from datetime import datetime
 
-DEFAULT_CALENDARS = ["Merged Calendars", "censey@gmail.com"]
 DEFAULT_LIMIT = 10
 
 # gcalcli --tsv prints a header row naming its columns. We read the layout
@@ -135,16 +134,27 @@ def find_gcalcli():
     return shutil.which("gcalcli")
 
 
+def build_command(binary, calendars):
+    """Assemble the gcalcli invocation.
+
+    No configured calendars means no --calendar flags, which is gcalcli's own
+    "all of them" behavior — the right default for someone who just installed
+    this and has not configured anything yet.
+    """
+    command = [binary, "--nocolor"]
+    for calendar in (calendars or []):
+        command += ["--calendar", calendar]
+    command += ["agenda", "today", "--nodeclined", "--details=end",
+                "--details=url", "--details=conference", "--tsv"]
+    return command
+
+
 def fetch(calendars, timeout=45):
     binary = find_gcalcli()
     if not binary:
         return None, "gcalcli not found"
 
-    command = [binary, "--nocolor"]
-    for calendar in calendars:
-        command += ["--calendar", calendar]
-    command += ["agenda", "today", "--nodeclined", "--details=end",
-                "--details=url", "--details=conference", "--tsv"]
+    command = build_command(binary, calendars)
 
     try:
         result = subprocess.run(command, capture_output=True, text=True,
@@ -163,11 +173,11 @@ def fetch(calendars, timeout=45):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--calendar", action="append", dest="calendars",
-                        help="calendar name; repeatable (default: %s)" % ", ".join(DEFAULT_CALENDARS))
+                        help="calendar name; repeatable (default: all calendars)")
     parser.add_argument("--limit", type=int, default=DEFAULT_LIMIT)
     args = parser.parse_args()
 
-    output, error = fetch(args.calendars or DEFAULT_CALENDARS)
+    output, error = fetch(args.calendars)
     payload = build_payload(output, limit=max(1, args.limit), error=error)
     json.dump(payload, sys.stdout, ensure_ascii=False)
     sys.stdout.write("\n")
