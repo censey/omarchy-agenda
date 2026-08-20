@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "censey.agenda",
+  "name": "Agenda",
+  "version": "1.0.0",
+  "author": "Chris Ensey",
+  "license": "MIT",
+  "description": "Next meeting countdown in the bar, with a keyboard-navigable agenda popup, backed by gcalcli",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Agenda",
+    "description": "Countdown to your next meeting. Left = agenda popup · right = refresh · middle = join next meeting.",
+    "category": "Time",
+    "defaultSection": "right",
+    "allowMultiple": false
+  }
+}
